@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: rate-limiter
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      timeout: 2000
+
+# Actuator & Prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+# Logging: Include the X-Request-Id correlation ID in every log line
+# This makes distributed request tracing possible across service boundaries.
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level [%X{X-Request-Id:-}] %logger{36} - %msg%n"
+
+# Custom Rate Limiter Configurations
+rate-limiter:
+  enabled: true
+  active-strategy: TOKEN_BUCKET  # Supports: TOKEN_BUCKET or SLIDING_WINDOW
+  default-limit: 10              # Global default for unauthenticated IPs
+  default-window-seconds: 60     
+  endpoints:
+    "/api/login":
+      limit: 3
+      window-seconds: 60
+    "/api/admin":
+      limit: 50
+      window-seconds: 60
+  roles:
+    "ROLE_ADMIN":
+      limit: 100
+      window-seconds: 60
+    "ROLE_USER":
+      limit: 20
+      window-seconds: 60
