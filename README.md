@@ -44,7 +44,7 @@ graph TD
     Filter1 --> Filter2[RateLimiterFilter: Global Interception]
     
     Filter2 --> L1{L1 Caffeine Cache<br>Short-Circuit Check}
-    L1 -- Blocked IP Found --> Reject1[Return 429 Instantly <br> Latency: ~14 µs (in-memory short-circuit path, measured locally)]
+    L1 -- Blocked IP Found --> Reject1["Return 429 Instantly <br> Latency: ~14 µs (in-memory short-circuit path, measured locally)"]
     
     L1 -- Allowed --> L2{L2 Redis Cluster<br>Atomic Token Evaluation}
     
