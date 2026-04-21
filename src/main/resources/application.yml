@@ -21,6 +21,13 @@ management:
     health:
       show-details: always
 
+# Swagger UI & API Docs
+springdoc:
+  swagger-ui:
+    path: /docs
+  api-docs:
+    path: /v3/api-docs
+
 # Logging: Include the X-Request-Id correlation ID in every log line
 # This makes distributed request tracing possible across service boundaries.
 logging:

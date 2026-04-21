@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Distributed Rate Limiter API",
+                title = "Shield — Distributed Rate Limiter System",
                 description = "High-performance, configurable Rate Limiter using Spring Boot, Redis (Lua Scripts), and AOP. " +
                               "Demonstrates Token Bucket & Sliding Window algorithms with fail-open resiliency.",
                 version = "v1.0",
@@ -24,8 +24,8 @@ import org.springframework.context.annotation.Configuration;
         ),
         servers = {
                 @Server(
-                        description = "Local Development Server",
-                        url = "http://localhost:8080"
+                        description = "Production Gateway (Render)",
+                        url = "https://shield.kushan.codes"
                 )
         }
 )

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live System Metrics | Shield</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary: #00ff88;
+            --danger: #ff4757;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid var(--glass-border);
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+            background: var(--glass-bg);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: left;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        .card-value.danger { color: var(--danger); }
+        .card-value.success { color: var(--primary); }
+
+        .loading {
+            opacity: 0.5;
+            font-size: 1rem;
+        }
+
+        .raw-link {
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .raw-link:hover { color: var(--primary); }
+
+        .up-arrow { color: #a5b4fc; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1><div class="live-indicator"></div> Live Telemetry</h1>
+        <a href="/" class="back-btn">← Gateway Home</a>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-title">Total Requests</div>
+            <div class="card-value" id="val-total"><span class="loading">Fetching...</span></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Allowed (L1/L2 Cache)</div>
+            <div class="card-value success" id="val-allowed">-</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Blocked (DDoS/Spam)</div>
+            <div class="card-value danger" id="val-blocked">-</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Current Block Rate</div>
+            <div class="card-value" id="val-rate">-</div>
+        </div>
+    </div>
+
+    <a href="/api/rate-limiter/stats" target="_blank" class="raw-link">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+        View Raw JSON Payload
+    </a>
+
+    <script>
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/api/rate-limiter/stats');
+                const data = await response.json();
+                
+                // Animate Numbers if they change
+                updateDom('val-total', data.totalRequests);
+                updateDom('val-allowed', data.allowedRequests);
+                updateDom('val-blocked', data.blockedRequests);
+                document.getElementById('val-rate').innerText = data.blockRate;
+
+            } catch (error) {
+                console.error("Failed to fetch telemetry:", error);
+            }
+        }
+
+        function updateDom(id, value) {
+            const el = document.getElementById(id);
+            if(el.innerText !== value.toString()) {
+                el.innerText = value;
+                // Tiny bump animation on update
+                el.style.transform = "scale(1.05)";
+                setTimeout(() => el.style.transform = "scale(1)", 150);
+            }
+        }
+
+        // Fetch immediately, then every 2 seconds
+        fetchMetrics();
+        setInterval(fetchMetrics, 2000);
+    </script>
+</body>
+</html>
