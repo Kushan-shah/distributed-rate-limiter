@@ -8,6 +8,14 @@
   <img src="https://img.shields.io/badge/Grafana%20K6-Stress%20Tested-purple?style=for-the-badge&logo=grafana" alt="K6"/>
 </div>
 
+<div align="center">
+  <h3>
+    <a href="https://shield.kushan.codes">🌐 View Live Production System</a>
+    <span> | </span>
+    <a href="https://shield.kushan.codes/docs">📚 Interactive API Docs</a>
+  </h3>
+</div>
+
 <br/>
 
 <p align="center">
@@ -120,7 +128,7 @@ The application is fully documented using structured `Data Transfer Objects (DTO
 | `GET` | `/api/rate-limiter/stats` | Access internal tracking metrics of the limiter. |
 | `GET` | `/actuator/prometheus` | Prometheus scraper endpoint tracking blocked/allowed tallies. |
 
-**Swagger Portal:** Accessible at `http://localhost:8080/swagger-ui/index.html`.
+**Swagger Portal:** Accessible at `https://shield.kushan.codes/docs`
 
 ---
 
