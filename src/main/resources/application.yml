@@ -1,13 +1,14 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: rate-limiter
   data:
     redis:
-      host: localhost
-      port: 6380
+      url: ${REDIS_URL:}
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6380}
       timeout: 2000
 
 # Actuator & Prometheus
