@@ -161,8 +161,3 @@ for i in {1..5}; do curl -i http://localhost:8080/api/login; echo ""; done
 # X-RateLimit-Remaining: 0
 # Retry-After: 60
 ```
-
----
-
-## 📜 License
-MIT License. Open for educational use.
